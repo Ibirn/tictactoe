@@ -47,12 +47,22 @@ const checkWin = (player) => {
   let rowC = (player.match(/C/g) || []).length;
   let diagA = (player.match(/^(?=.*A1)(?=.*B2)(?=.*C3).*$/im) || []).length;
   let diagB = (player.match(/^(?=.*A3)(?=.*B2)(?=.*C1).*$/im) || []).length;
-  if (columnA >= 3) {
-    process.stdout.write("A win!");
+  if (
+    columnA >= 3 ||
+    columnB >= 3 ||
+    columnC >= 3 ||
+    rowA >= 3 ||
+    rowB >= 3 ||
+    rowC >= 3 ||
+    diagA >= 1 ||
+    diagB >= 1
+  ) {
+    process.stdout.write("A win!\n");
+    complete = true;
   }
 };
 const compTurn = () => {
-  console.log("COMPMOVES: ", possibleMoves);
+  // console.log("COMPMOVES: ", possibleMoves);
   let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
   let temp = 0;
   if (move[1] === "1") {
@@ -66,86 +76,53 @@ const compTurn = () => {
   }
   gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(temp, "O");
   oPositions += move;
-  console.log(oPositions, xPositions);
+  // console.log(oPositions, xPositions);
   removePossibleMove(move);
 };
 
 const turn = () => {
-  return new Promise((resolve, reject) => {
-    rl.question("Please choose a coordinate: ", (move) => {
-      let index = possibleMoves.indexOf(move);
-      console.log("INDEX: ", index, "\nPOSSMO: ", possibleMoves);
-      if (index >= 0) {
-        let temp = 0;
-        if (move[1] === "1") {
-          temp = 4;
-        } else if (move[1] === "2") {
-          temp = 7;
-        } else if (move[1] === "3") {
-          temp = 10;
+  if (complete === false) {
+    return new Promise((resolve, reject) => {
+      rl.question("Please choose a coordinate: ", (move) => {
+        let index = possibleMoves.indexOf(move);
+        // console.log("INDEX: ", index, "\nPOSSMO: ", possibleMoves);
+        if (index >= 0) {
+          let temp = 0;
+          if (move[1] === "1") {
+            temp = 4;
+          } else if (move[1] === "2") {
+            temp = 7;
+          } else if (move[1] === "3") {
+            temp = 10;
+          } else {
+            temp = -1;
+          }
+          gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
+            temp,
+            "X"
+          );
+          removePossibleMove(move);
+          xPositions += move;
+          resolve();
+          checkWin(xPositions);
+          compTurn();
+          // console.log("XIN: ", xPositions, "\nOIN: ", oPositions);
+          drawBoard();
+          checkWin(oPositions);
+          turn();
         } else {
-          temp = -1;
+          process.stdout.write(
+            "That space has already been played. \nPlease choose another.\n"
+          );
+          resolve();
+          drawBoard();
+          turn();
         }
-        gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
-          temp,
-          "X"
-        );
-        removePossibleMove(move);
-        xPositions += move;
-        resolve();
-        checkWin(xPositions);
-        compTurn();
-        console.log("XIN: ", xPositions, "\nOIN: ", oPositions);
-        drawBoard();
-        checkWin(oPositions);
-        turn();
-      } else {
-        process.stdout.write(
-          "That space has already been played. \nPlease choose another.\n"
-        );
-        resolve();
-        drawBoard();
-        turn();
-      }
+      });
     });
-  });
+  } else {
+    rl.close();
+  }
 };
 
 turn();
-
-// drawBoard();
-// runGame();
-// //'use strict'
-
-// const readline = require('readline')
-
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout
-// })
-
-// const question1 = () => {
-//   return new Promise((resolve, reject) => {
-//     rl.question('q1 What do you think of Node.js? ', (answer) => {
-//       console.log(`Thank you for your valuable feedback: ${answer}`)
-//       resolve()
-//     })
-//   })
-// }
-
-// const question2 = () => {
-//   return new Promise((resolve, reject) => {
-//     rl.question('q2 What do you think of Node.js? ', (answer) => {
-//       console.log(`Thank you for your valuable feedback: ${answer}`)
-//       resolve()
-//     })
-//   })
-// }
-
-// const main = async () => {
-//   await question1()
-//   await question2()
-//   rl.close()
-// }
-
-// main()
