@@ -20,6 +20,8 @@ let gameBoard = {
   rowC: ` C [ ][ ][ ]\n`,
 };
 let possibleMoves = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
+let xPositions = "";
+let oPositions = "";
 
 const removePossibleMove = (value) => {
   let index = possibleMoves.indexOf(value);
@@ -36,6 +38,19 @@ const drawBoard = () => {
 rl.write("Welcome to Tic Tac Toe!\n Are you ready to play?\n");
 drawBoard();
 
+const checkWin = (player) => {
+  let columnA = (player.match(/1/g) || []).length;
+  let columnB = (player.match(/2/g) || []).length;
+  let columnC = (player.match(/3/g) || []).length;
+  let rowA = (player.match(/A/g) || []).length;
+  let rowB = (player.match(/B/g) || []).length;
+  let rowC = (player.match(/C/g) || []).length;
+  let diagA = (player.match(/^(?=.*A1)(?=.*B2)(?=.*C3).*$/im) || []).length;
+  let diagB = (player.match(/^(?=.*A3)(?=.*B2)(?=.*C1).*$/im) || []).length;
+  if (columnA >= 3) {
+    process.stdout.write("A win!");
+  }
+};
 const compTurn = () => {
   console.log("COMPMOVES: ", possibleMoves);
   let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
@@ -50,6 +65,8 @@ const compTurn = () => {
     temp = -1;
   }
   gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(temp, "O");
+  oPositions += move;
+  console.log(oPositions, xPositions);
   removePossibleMove(move);
 };
 
@@ -74,9 +91,13 @@ const turn = () => {
           "X"
         );
         removePossibleMove(move);
+        xPositions += move;
         resolve();
+        checkWin(xPositions);
         compTurn();
+        console.log("XIN: ", xPositions, "\nOIN: ", oPositions);
         drawBoard();
+        checkWin(oPositions);
         turn();
       } else {
         process.stdout.write(
