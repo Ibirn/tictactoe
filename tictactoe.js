@@ -22,6 +22,8 @@ let gameBoard = {
 let possibleMoves = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
 let xPositions = "";
 let oPositions = "";
+let turnCount = 0;
+let illegalMove = false;
 
 const removePossibleMove = (value) => {
   let index = possibleMoves.indexOf(value);
@@ -57,72 +59,86 @@ const checkWin = (player) => {
     diagA >= 1 ||
     diagB >= 1
   ) {
-    process.stdout.write("A win!\n");
+    process.stdout.write(`${turnCount % 2 ? "O" : "X"} has won!\n`);
     complete = true;
   }
 };
 const compTurn = () => {
-  // console.log("COMPMOVES: ", possibleMoves);
-  let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-  let temp = 0;
-  if (move[1] === "1") {
-    temp = 4;
-  } else if (move[1] === "2") {
-    temp = 7;
-  } else if (move[1] === "3") {
-    temp = 10;
-  } else {
-    temp = -1;
-  }
-  gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(temp, "O");
-  oPositions += move;
-  // console.log(oPositions, xPositions);
-  removePossibleMove(move);
+  return new Promise((resolve, reject) => {
+    // console.log("COMPMOVES: ", possibleMoves);
+    let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    let temp = 0;
+    if (move[1] === "1") {
+      temp = 4;
+    } else if (move[1] === "2") {
+      temp = 7;
+    } else if (move[1] === "3") {
+      temp = 10;
+    } else {
+      temp = -1;
+    }
+    gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
+      temp,
+      "O"
+    );
+    oPositions += move;
+    removePossibleMove(move);
+    resolve();
+    process.stdout.write("Computer is playing...\n");
+    drawBoard();
+    checkWin(oPositions);
+    turnCount += 1;
+  });
 };
 
 const turn = () => {
-  if (complete === false) {
-    return new Promise((resolve, reject) => {
-      rl.question("Please choose a coordinate: ", (move) => {
-        let index = possibleMoves.indexOf(move);
-        // console.log("INDEX: ", index, "\nPOSSMO: ", possibleMoves);
-        if (index >= 0) {
-          let temp = 0;
-          if (move[1] === "1") {
-            temp = 4;
-          } else if (move[1] === "2") {
-            temp = 7;
-          } else if (move[1] === "3") {
-            temp = 10;
-          } else {
-            temp = -1;
-          }
-          gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
-            temp,
-            "X"
-          );
-          removePossibleMove(move);
-          xPositions += move;
-          resolve();
-          checkWin(xPositions);
-          compTurn();
-          // console.log("XIN: ", xPositions, "\nOIN: ", oPositions);
-          drawBoard();
-          checkWin(oPositions);
-          turn();
+  return new Promise((resolve, reject) => {
+    rl.question("Please choose a coordinate: ", (move) => {
+      let index = possibleMoves.indexOf(move);
+      if (index >= 0) {
+        let temp = 0;
+        if (move[1] === "1") {
+          temp = 4;
+        } else if (move[1] === "2") {
+          temp = 7;
+        } else if (move[1] === "3") {
+          temp = 10;
         } else {
-          process.stdout.write(
-            "That space has already been played. \nPlease choose another.\n"
-          );
-          resolve();
-          drawBoard();
-          turn();
+          temp = -1;
         }
-      });
+        gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
+          temp,
+          "X"
+        );
+        removePossibleMove(move);
+        xPositions += move;
+        resolve();
+        checkWin(xPositions);
+        turnCount += 1;
+        drawBoard();
+        illegalMove = false;
+      } else {
+        process.stdout.write(
+          "That space has already been played. \nPlease choose another.\n"
+        );
+        illegalMove = true;
+        resolve();
+        drawBoard();
+      }
     });
+  });
+};
+
+const runGame = async () => {
+  if (complete === false) {
+    await turn();
+    if (complete === false && illegalMove === false) {
+      await compTurn();
+    }
+    runGame();
   } else {
     rl.close();
   }
 };
 
-turn();
+runGame();
