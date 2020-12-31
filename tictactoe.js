@@ -22,8 +22,9 @@ let gameBoard = {
 let possibleMoves = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
 let xPositions = "";
 let oPositions = "";
-let turnCount = 0;
+let turnCount = 0; //checkwin, needs edit for selection of player
 let illegalMove = false;
+let playerChoice = true; //true = X, false = O
 
 const removePossibleMove = (value) => {
   let index = possibleMoves.indexOf(value);
@@ -32,15 +33,15 @@ const removePossibleMove = (value) => {
   }
   return possibleMoves;
 };
+
 const drawBoard = () => {
   process.stdout.write(
     gameBoard.header + gameBoard.rowA + gameBoard.rowB + gameBoard.rowC
   );
 };
-rl.write("Welcome to Tic Tac Toe!\n Are you ready to play?\n");
-drawBoard();
 
 const checkWin = (player) => {
+  console.log("CHECKING: ");
   let columnA = (player.match(/1/g) || []).length;
   let columnB = (player.match(/2/g) || []).length;
   let columnC = (player.match(/3/g) || []).length;
@@ -63,6 +64,7 @@ const checkWin = (player) => {
     complete = true;
   }
 };
+
 const compTurn = () => {
   return new Promise((resolve, reject) => {
     // console.log("COMPMOVES: ", possibleMoves);
@@ -79,7 +81,7 @@ const compTurn = () => {
     }
     gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
       temp,
-      "O"
+      playerChoice ? "O" : "X"
     );
     oPositions += move;
     removePossibleMove(move);
@@ -108,7 +110,7 @@ const turn = () => {
         }
         gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
           temp,
-          "X"
+          playerChoice ? "X" : "O"
         );
         removePossibleMove(move);
         xPositions += move;
@@ -129,6 +131,20 @@ const turn = () => {
   });
 };
 
+rl.write("Welcome to Tic Tac Toe!\n");
+rl.question("Would you like to play as X or O? ", (answer) => {
+  if (answer !== "X") {
+    process.stdout.write("You are O.\n");
+    playerChoice = false;
+    compTurn();
+    runGame();
+  } else {
+    process.stdout.write("You are X.\n");
+    drawBoard();
+    runGame();
+  }
+});
+
 const runGame = async () => {
   if (complete === false) {
     await turn();
@@ -140,5 +156,3 @@ const runGame = async () => {
     rl.close();
   }
 };
-
-runGame();
