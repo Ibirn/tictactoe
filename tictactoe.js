@@ -62,6 +62,9 @@ const checkWin = (player) => {
   ) {
     process.stdout.write(`${turnCount % 2 ? "O" : "X"} has won!\n`);
     complete = true;
+  } else if (possibleMoves.length === 0) {
+    process.stdout.write("There are no winners.\n");
+    complete = true;
   }
 };
 
@@ -137,61 +140,85 @@ const block = (plays) => {
     (plays.match(/1/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/1\b/))
   ) {
+    console.log("1 CHECKED");
     return possibleMoves.filter((e) => e.match(/1\b/))[0];
-  } else if (
+  }
+  if (
     (plays.match(/2/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/2\b/))
   ) {
+    console.log("2 CHECKED");
     return possibleMoves.filter((e) => e.match(/2\b/))[0];
-  } else if (
+  }
+  if (
     (plays.match(/3/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/3\b/))
   ) {
+    console.log("3 CHECKED");
     return possibleMoves.filter((e) => e.match(/3\b/))[0];
-  } else if (
+  }
+  if (
     (plays.match(/A/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/A\b/))
   ) {
+    console.log("A CHECKED");
     return possibleMoves.filter((e) => e.match(/A\b/))[0];
-  } else if (
+  }
+  if (
     (plays.match(/B/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/B\b/))
   ) {
+    console.log("B CHECKED");
     return possibleMoves.filter((e) => e.match(/B\b/))[0];
-  } else if (
+  }
+  if (
     (plays.match(/C/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/C\b/))
   ) {
+    console.log("C CHECKED");
+    // console.log(possibleMoves.filter((e) => e.match(/C\b/))[0]);
     return possibleMoves.filter((e) => e.match(/C\b/))[0];
-  } else if (
+  }
+  if (
     (plays.match(/^(?=.*A1)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("C3")
   ) {
+    console.log("A1B2 CHECKED");
     return "C3";
-  } else if (
+  }
+  if (
     (plays.match(/^(?=.*C3)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("A1")
   ) {
+    console.log("C3B2 CHECKED");
     return "A1";
-  } else if (
+  }
+  if (
     (plays.match(/^(?=.*C1)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("A3")
   ) {
+    console.log("C1B2 CHECKED");
     return "A3";
-  } else if (
+  }
+  if (
     (plays.match(/^(?=.*A3)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("C1")
   ) {
+    console.log("A3B2 CHECKED");
     return "C1";
-  } else if (
+  }
+  if (
     (plays.match(/^(?=.*A3)(?=.*C1)/g) || []).length === 1 &&
     possibleMoves.includes("B2")
   ) {
+    console.log("A3C1 CHECKED");
     return "B2";
-  } else if (
+  }
+  if (
     (plays.match(/^(?=.*A1)(?=.*C3)/g) || []).length === 1 &&
     possibleMoves.includes("B2")
   ) {
+    console.log("A1C3 CHECKED");
     return "B2";
   } else {
     return null;
