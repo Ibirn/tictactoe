@@ -12,8 +12,68 @@ let blockWin = false;
 const block = (plays) => {
   // let move;
   // console.log(plays.match(/1/g));
-  if (plays.match(/1/g).length === 2) {
+  if (
+    (plays.match(/1/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/1\b/))
+  ) {
     return possibleMoves.filter((e) => e.match(/1\b/))[0];
+  } else if (
+    (plays.match(/2/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/2\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/2\b/))[0];
+  } else if (
+    (plays.match(/3/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/3\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/3\b/))[0];
+  } else if (
+    (plays.match(/A/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/A\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/A\b/))[0];
+  } else if (
+    (plays.match(/B/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/B\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/B\b/))[0];
+  } else if (
+    (plays.match(/C/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/C\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/C\b/))[0];
+  } else if (
+    (plays.match(/^(?=.*A1)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("C3")
+  ) {
+    return "C3";
+  } else if (
+    (plays.match(/^(?=.*C3)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("A1")
+  ) {
+    return "A1";
+  } else if (
+    (plays.match(/^(?=.*C1)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("A3")
+  ) {
+    return "A3";
+  } else if (
+    (plays.match(/^(?=.*A3)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("C1")
+  ) {
+    return "C1";
+  } else if (
+    (plays.match(/^(?=.*A3)(?=.*C1)/g) || []).length === 1 &&
+    possibleMoves.includes("B2")
+  ) {
+    return "B2";
+  } else if (
+    (plays.match(/^(?=.*A1)(?=.*C3)/g) || []).length === 1 &&
+    possibleMoves.includes("B2")
+  ) {
+    return "B2";
+  } else {
+    return null;
   }
 };
 
