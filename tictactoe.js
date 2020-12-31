@@ -20,6 +20,7 @@ let gameBoard = {
   rowC: ` C [ ][ ][ ]\n`,
 };
 let possibleMoves = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
+let cornerMoves = ["A1", "A3", "C1", "C3"];
 let playPositions = "";
 let compPositions = "";
 let turnCount = 0;
@@ -29,8 +30,12 @@ let difficulty = false; //easy = false, hard = true
 
 const removePossibleMove = (value) => {
   let index = possibleMoves.indexOf(value);
+  let cornerIndex = cornerMoves.indexOf(value);
   if (index > -1) {
     possibleMoves.splice(index, 1);
+  }
+  if (cornerIndex > -1) {
+    cornerMoves.splice(cornerIndex, 1);
   }
   return possibleMoves;
 };
@@ -139,84 +144,72 @@ const block = (plays) => {
     (plays.match(/1/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/1\b/))
   ) {
-    console.log("1 CHECKED");
     output = possibleMoves.filter((e) => e.match(/1\b/))[0];
   }
   if (
     (plays.match(/2/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/2\b/))
   ) {
-    console.log("2 CHECKED");
     output = possibleMoves.filter((e) => e.match(/2\b/))[0];
   }
   if (
     (plays.match(/3/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/3\b/))
   ) {
-    console.log("3 CHECKED");
     output = possibleMoves.filter((e) => e.match(/3\b/))[0];
   }
   if (
     (plays.match(/A/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/\bA/))
   ) {
-    console.log("A CHECKED");
     output = possibleMoves.filter((e) => e.match(/\bA/))[0];
   }
   if (
     (plays.match(/B/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/\bB/))
   ) {
-    console.log("B CHECKED ");
     output = possibleMoves.filter((e) => e.match(/\bB/))[0];
   }
   if (
     (plays.match(/C/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/\bC/))
   ) {
-    console.log("C CHECKED");
     output = possibleMoves.filter((e) => e.match(/\bC/))[0];
   }
   if (
     (plays.match(/^(?=.*A1)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("C3")
   ) {
-    console.log("A1B2 CHECKED");
     output = "C3";
   }
   if (
     (plays.match(/^(?=.*C3)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("A1")
   ) {
-    console.log("C3B2 CHECKED");
     output = "A1";
   }
   if (
     (plays.match(/^(?=.*C1)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("A3")
   ) {
-    console.log("C1B2 CHECKED");
     output = "A3";
   }
   if (
     (plays.match(/^(?=.*A3)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("C1")
   ) {
-    console.log("A3B2 CHECKED");
     output = "C1";
   }
   if (
     (plays.match(/^(?=.*A3)(?=.*C1)/g) || []).length === 1 &&
     possibleMoves.includes("B2")
   ) {
-    console.log("A3C1 CHECKED");
     output = "B2";
   }
   if (
     (plays.match(/^(?=.*A1)(?=.*C3)/g) || []).length === 1 &&
     possibleMoves.includes("B2")
   ) {
-    console.log("A1C3 CHECKED");
     output = "B2";
   }
   if (output) {
@@ -232,6 +225,8 @@ const compTurnHard = () => {
 
     if (turnCount === 0) {
       move = "B2";
+    } else if (turnCount === 2) {
+      move = cornerMoves[Math.floor(Math.random() * cornerMoves.length)];
     } else {
       move = block(compPositions)
         ? block(compPositions)
