@@ -25,7 +25,7 @@ let compPositions = "";
 let turnCount = 0;
 let illegalMove = false;
 let playerChoice = true; //true = X, false = O
-let difficulty = false;
+let difficulty = false; //easy = false, hard = true
 
 const removePossibleMove = (value) => {
   let index = possibleMoves.indexOf(value);
@@ -71,18 +71,18 @@ const checkWin = (player) => {
 const compTurn = () => {
   return new Promise((resolve, reject) => {
     let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-    let temp = 0;
+    let charIndex = 0;
     if (move[1] === "1") {
-      temp = 4;
+      charIndex = 4;
     } else if (move[1] === "2") {
-      temp = 7;
+      charIndex = 7;
     } else if (move[1] === "3") {
-      temp = 10;
+      charIndex = 10;
     } else {
-      temp = -1;
+      charIndex = -1;
     }
     gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
-      temp,
+      charIndex,
       playerChoice ? "O" : "X"
     );
     compPositions += move;
@@ -100,18 +100,18 @@ const turn = () => {
     rl.question("Please choose a coordinate: ", (move) => {
       let index = possibleMoves.indexOf(move);
       if (index >= 0) {
-        let temp = 0;
+        let charIndex = 0;
         if (move[1] === "1") {
-          temp = 4;
+          charIndex = 4;
         } else if (move[1] === "2") {
-          temp = 7;
+          charIndex = 7;
         } else if (move[1] === "3") {
-          temp = 10;
+          charIndex = 10;
         } else {
-          temp = -1;
+          charIndex = -1;
         }
         gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
-          temp,
+          charIndex,
           playerChoice ? "X" : "O"
         );
         removePossibleMove(move);
@@ -239,18 +239,19 @@ const compTurnHard = () => {
         ? block(playPositions)
         : possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     }
-    let temp = 0;
+    let charIndex;
     if (move[1] === "1") {
-      temp = 4;
+      charIndex = 4;
     } else if (move[1] === "2") {
-      temp = 7;
+      charIndex = 7;
     } else if (move[1] === "3") {
-      temp = 10;
+      charIndex = 10;
     } else {
-      temp = -1;
+      charIndex = -1;
     }
+
     gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
-      temp,
+      charIndex,
       playerChoice ? "O" : "X"
     );
     compPositions += move;
