@@ -22,7 +22,7 @@ let gameBoard = {
 let possibleMoves = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
 let xPositions = "";
 let oPositions = "";
-let turnCount = 0; //checkwin, needs edit for selection of player
+let turnCount = 0;
 let illegalMove = false;
 let playerChoice = true; //true = X, false = O
 
@@ -41,7 +41,6 @@ const drawBoard = () => {
 };
 
 const checkWin = (player) => {
-  console.log("CHECKING: ");
   let columnA = (player.match(/1/g) || []).length;
   let columnB = (player.match(/2/g) || []).length;
   let columnC = (player.match(/3/g) || []).length;
@@ -67,7 +66,6 @@ const checkWin = (player) => {
 
 const compTurn = () => {
   return new Promise((resolve, reject) => {
-    // console.log("COMPMOVES: ", possibleMoves);
     let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     let temp = 0;
     if (move[1] === "1") {
