@@ -1,12 +1,4 @@
-let gameBoard = {
-  header: `    1  2  3 \n`,
-  rowA: ` A [ ][ ][ ]\n`,
-  rowB: ` B [ ][ ][ ]\n`,
-  rowC: ` C [ ][ ][ ]\n`,
-};
-let possibleMoves = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
-let xPositions = "";
-let oPositions = "";
+compPositions = "";
 let blockWin = false;
 
 const block = (plays) => {
@@ -79,7 +71,12 @@ const block = (plays) => {
 
 const compTurnHard = () => {
   return new Promise((resolve, reject) => {
-    let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    let move;
+    if (block(compPositions)) {
+      move = block(compPositions);
+    } else {
+      move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    }
     let temp = 0;
     if (move[1] === "1") {
       temp = 4;

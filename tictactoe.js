@@ -20,11 +20,12 @@ let gameBoard = {
   rowC: ` C [ ][ ][ ]\n`,
 };
 let possibleMoves = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
-let xPositions = "";
-let oPositions = "";
+let playPositions = "";
+let compPositions = "";
 let turnCount = 0;
 let illegalMove = false;
 let playerChoice = true; //true = X, false = O
+let difficulty = false;
 
 const removePossibleMove = (value) => {
   let index = possibleMoves.indexOf(value);
@@ -81,12 +82,12 @@ const compTurn = () => {
       temp,
       playerChoice ? "O" : "X"
     );
-    oPositions += move;
+    compPositions += move;
     removePossibleMove(move);
     resolve();
     process.stdout.write("Computer is playing...\n");
     drawBoard();
-    checkWin(oPositions);
+    checkWin(compPositions);
     turnCount += 1;
   });
 };
@@ -111,9 +112,9 @@ const turn = () => {
           playerChoice ? "X" : "O"
         );
         removePossibleMove(move);
-        xPositions += move;
+        playPositions += move;
         resolve();
-        checkWin(xPositions);
+        checkWin(playPositions);
         turnCount += 1;
         drawBoard();
         illegalMove = false;
@@ -129,28 +130,158 @@ const turn = () => {
   });
 };
 
-rl.write("Welcome to Tic Tac Toe!\n");
-rl.question("Would you like to play as X or O? ", (answer) => {
-  if (answer !== "X") {
-    process.stdout.write("You are O.\n");
-    playerChoice = false;
-    compTurn();
-    runGame();
+const block = (plays) => {
+  // let move;
+  console.log("BLOCK CHECKING: ", plays);
+  if (
+    (plays.match(/1/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/1\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/1\b/))[0];
+  } else if (
+    (plays.match(/2/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/2\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/2\b/))[0];
+  } else if (
+    (plays.match(/3/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/3\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/3\b/))[0];
+  } else if (
+    (plays.match(/A/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/A\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/A\b/))[0];
+  } else if (
+    (plays.match(/B/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/B\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/B\b/))[0];
+  } else if (
+    (plays.match(/C/g) || []).length === 2 &&
+    possibleMoves.filter((e) => e.match(/C\b/))
+  ) {
+    return possibleMoves.filter((e) => e.match(/C\b/))[0];
+  } else if (
+    (plays.match(/^(?=.*A1)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("C3")
+  ) {
+    return "C3";
+  } else if (
+    (plays.match(/^(?=.*C3)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("A1")
+  ) {
+    return "A1";
+  } else if (
+    (plays.match(/^(?=.*C1)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("A3")
+  ) {
+    return "A3";
+  } else if (
+    (plays.match(/^(?=.*A3)(?=.*B2)/g) || []).length === 1 &&
+    possibleMoves.includes("C1")
+  ) {
+    return "C1";
+  } else if (
+    (plays.match(/^(?=.*A3)(?=.*C1)/g) || []).length === 1 &&
+    possibleMoves.includes("B2")
+  ) {
+    return "B2";
+  } else if (
+    (plays.match(/^(?=.*A1)(?=.*C3)/g) || []).length === 1 &&
+    possibleMoves.includes("B2")
+  ) {
+    return "B2";
   } else {
-    process.stdout.write("You are X.\n");
+    return null;
+  }
+};
+
+const compTurnHard = () => {
+  console.log("PLAYING HARD");
+  return new Promise((resolve, reject) => {
+    let move;
+    if (block(playPositions)) {
+      move = block(playPositions);
+    } else {
+      move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    }
+    let temp = 0;
+    if (move[1] === "1") {
+      temp = 4;
+    } else if (move[1] === "2") {
+      temp = 7;
+    } else if (move[1] === "3") {
+      temp = 10;
+    } else {
+      temp = -1;
+    }
+    gameBoard[`row${move[0]}`] = gameBoard[`row${move[0]}`].replaceAt(
+      temp,
+      playerChoice ? "O" : "X"
+    );
+    compPositions += move;
+    removePossibleMove(move);
+    resolve();
+    process.stdout.write("Computer is playing...\n");
     drawBoard();
-    runGame();
+    checkWin(compPositions);
+    turnCount += 1;
+  });
+};
+
+rl.write("Welcome to Tic Tac Toe!\n");
+rl.question("Would you like to play on (E)asy or (H)ard? ", (answer) => {
+  if (answer === "E") {
+    process.stdout.write("Excellent! ");
+    firstTurn();
+  } else if (answer === "H") {
+    process.stdout.write("Good choice! ");
+    difficulty = true;
+    firstTurn();
+  } else {
+    process.stdout.write(
+      "How uncooperative! You're playing on baby mode for babies.\n"
+    );
+    firstTurn();
   }
 });
+const firstTurn = () => {
+  rl.question("Would you like to play as X or O? ", (answer) => {
+    if (answer !== "X") {
+      process.stdout.write("You are O.\n");
+      playerChoice = false;
+      difficulty ? compTurnHard() : compTurn();
+      runGame();
+    } else {
+      process.stdout.write("You are X.\n");
+      drawBoard();
+      runGame();
+    }
+  });
+};
 
 const runGame = async () => {
-  if (complete === false) {
-    await turn();
-    if (complete === false && illegalMove === false) {
-      await compTurn();
+  if (difficulty) {
+    if (complete === false) {
+      await turn();
+      if (complete === false && illegalMove === false) {
+        await compTurnHard();
+      }
+      runGame();
+    } else {
+      rl.close();
     }
-    runGame();
   } else {
-    rl.close();
+    if (complete === false) {
+      await turn();
+      if (complete === false && illegalMove === false) {
+        await compTurn();
+      }
+      runGame();
+    } else {
+      rl.close();
+    }
   }
 };
