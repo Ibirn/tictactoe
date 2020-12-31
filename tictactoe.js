@@ -134,105 +134,110 @@ const turn = () => {
 };
 
 const block = (plays) => {
-  // let move;
-  console.log("BLOCK CHECKING: ", plays);
+  let output;
   if (
     (plays.match(/1/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/1\b/))
   ) {
     console.log("1 CHECKED");
-    return possibleMoves.filter((e) => e.match(/1\b/))[0];
+    output = possibleMoves.filter((e) => e.match(/1\b/))[0];
   }
   if (
     (plays.match(/2/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/2\b/))
   ) {
     console.log("2 CHECKED");
-    return possibleMoves.filter((e) => e.match(/2\b/))[0];
+    output = possibleMoves.filter((e) => e.match(/2\b/))[0];
   }
   if (
     (plays.match(/3/g) || []).length === 2 &&
     possibleMoves.filter((e) => e.match(/3\b/))
   ) {
     console.log("3 CHECKED");
-    return possibleMoves.filter((e) => e.match(/3\b/))[0];
+    output = possibleMoves.filter((e) => e.match(/3\b/))[0];
   }
   if (
     (plays.match(/A/g) || []).length === 2 &&
-    possibleMoves.filter((e) => e.match(/A\b/))
+    possibleMoves.filter((e) => e.match(/\bA/))
   ) {
     console.log("A CHECKED");
-    return possibleMoves.filter((e) => e.match(/A\b/))[0];
+    output = possibleMoves.filter((e) => e.match(/\bA/))[0];
   }
   if (
     (plays.match(/B/g) || []).length === 2 &&
-    possibleMoves.filter((e) => e.match(/B\b/))
+    possibleMoves.filter((e) => e.match(/\bB/))
   ) {
-    console.log("B CHECKED");
-    return possibleMoves.filter((e) => e.match(/B\b/))[0];
+    console.log("B CHECKED ");
+    output = possibleMoves.filter((e) => e.match(/\bB/))[0];
   }
   if (
     (plays.match(/C/g) || []).length === 2 &&
-    possibleMoves.filter((e) => e.match(/C\b/))
+    possibleMoves.filter((e) => e.match(/\bC/))
   ) {
     console.log("C CHECKED");
-    // console.log(possibleMoves.filter((e) => e.match(/C\b/))[0]);
-    return possibleMoves.filter((e) => e.match(/C\b/))[0];
+    output = possibleMoves.filter((e) => e.match(/\bC/))[0];
   }
   if (
     (plays.match(/^(?=.*A1)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("C3")
   ) {
     console.log("A1B2 CHECKED");
-    return "C3";
+    output = "C3";
   }
   if (
     (plays.match(/^(?=.*C3)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("A1")
   ) {
     console.log("C3B2 CHECKED");
-    return "A1";
+    output = "A1";
   }
   if (
     (plays.match(/^(?=.*C1)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("A3")
   ) {
     console.log("C1B2 CHECKED");
-    return "A3";
+    output = "A3";
   }
   if (
     (plays.match(/^(?=.*A3)(?=.*B2)/g) || []).length === 1 &&
     possibleMoves.includes("C1")
   ) {
     console.log("A3B2 CHECKED");
-    return "C1";
+    output = "C1";
   }
   if (
     (plays.match(/^(?=.*A3)(?=.*C1)/g) || []).length === 1 &&
     possibleMoves.includes("B2")
   ) {
     console.log("A3C1 CHECKED");
-    return "B2";
+    output = "B2";
   }
   if (
     (plays.match(/^(?=.*A1)(?=.*C3)/g) || []).length === 1 &&
     possibleMoves.includes("B2")
   ) {
     console.log("A1C3 CHECKED");
-    return "B2";
+    output = "B2";
+  }
+  if (output) {
+    return output;
   } else {
     return null;
   }
 };
 
 const compTurnHard = () => {
-  console.log("PLAYING HARD");
   return new Promise((resolve, reject) => {
     let move;
-    if (block(playPositions)) {
-      move = block(playPositions);
+
+    if (turnCount === 0) {
+      move = "B2";
     } else {
-      move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+      move = block(compPositions)
+        ? block(compPositions)
+        : block(playPositions)
+        ? block(playPositions)
+        : possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     }
     let temp = 0;
     if (move[1] === "1") {
@@ -274,6 +279,7 @@ rl.question("Would you like to play on (E)asy or (H)ard? ", (answer) => {
     firstTurn();
   }
 });
+
 const firstTurn = () => {
   rl.question("Would you like to play as X or O? ", (answer) => {
     if (answer !== "X") {
